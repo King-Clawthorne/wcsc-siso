@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timezone
 
 from flask import Flask, jsonify, request, send_from_directory
 
@@ -38,6 +39,27 @@ def student():
         "checked_out_equipment": checked_out_equipment
     }
     return jsonify(results)
+
+
+# Sign a student out / in. The frontend POSTs the scanned barcode (plus an
+# optional destination/reason when signing out); the backend toggles the
+# student's state. Stub implementation until the database is wired up.
+@app.route("/api/student/leave", methods=['POST'])
+def student_leave():
+    payload = request.get_json(silent=True) or {}
+    barcode = payload.get("barcode")
+    destination_id = payload.get("destination_id")
+    reason = payload.get("reason")
+    now = datetime.now(timezone.utc).isoformat()
+
+    return jsonify({
+        "barcode": barcode,
+        "destination_id": destination_id,
+        "destination": "Newmarket" if destination_id else "School",
+        "reason": reason,
+        "time_out": now,
+        "time_in": now,
+    })
 
 
 # Serve the React single-page app. Any path that isn't an /api route falls
