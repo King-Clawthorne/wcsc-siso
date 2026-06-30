@@ -1,0 +1,16 @@
+# Render Blueprint: single web service that builds the React frontend and
+# serves it (plus the API) from Flask via gunicorn.
+#
+# Root Directory in the Render dashboard must be left BLANK (repo root) so the
+# build can run both npm (Frontend) and pip (Backend).
+services:
+  - type: web
+    name: wcsc-siso
+    runtime: python
+    buildCommand: |
+      cd Frontend && npm install && npm run build && cd ..
+      pip install ./Backend
+    startCommand: gunicorn --chdir Backend app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12.4"

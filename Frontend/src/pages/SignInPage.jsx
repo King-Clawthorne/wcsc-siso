@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BarcodeScanner from '@/components/BarcodeScanner.jsx';
 import StudentCard from '@/components/StudentCard.jsx';
+
+// Defer the camera/barcode bundle (@zxing) until the scanner is actually shown.
+const BarcodeScanner = lazy(() => import('@/components/BarcodeScanner.jsx'));
 import { getStudent, studentLeave } from '@/services/api.js';
 import '../index.css';
 
@@ -66,7 +68,9 @@ export default function SignInPage() {
       {loading && <p className="scan-status">Loading…</p>}
 
       {!student && !result && (
-        <BarcodeScanner onScan={handleScan} resetKey={scanKey} />
+        <Suspense fallback={<p className="scan-status">Starting camera…</p>}>
+          <BarcodeScanner onScan={handleScan} resetKey={scanKey} />
+        </Suspense>
       )}
 
       {student && !result && (
