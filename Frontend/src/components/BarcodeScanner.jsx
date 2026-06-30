@@ -24,14 +24,14 @@ export default function BarcodeScanner({ onScan, resetKey = 0 }) {
       try {
         if (!videoRef.current || cancelled) return;
         setError(null);
-        setStatus('Point the front camera at the barcode…');
+        setStatus('Point the back camera at the barcode…');
 
-        // Target hardware is an M4 iPad Pro: always use the front-facing
-        // (user) camera. The 1920x1080 hint keeps the standard wide lens
-        // rather than the ultra-wide framing.
+        // Target hardware is an M4 iPad Pro: always use the rear-facing
+        // (environment) camera. The 1920x1080 hint keeps the standard wide
+        // lens rather than the ultra-wide framing.
         const constraints = {
           video: {
-            facingMode: { exact: 'user' },
+            facingMode: { exact: 'environment' },
             width: { ideal: 1920 },
             height: { ideal: 1080 },
           },
