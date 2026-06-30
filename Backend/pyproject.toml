@@ -1,0 +1,39 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "SISO"
+version = "0.0.1"
+dependencies = [
+  "flask==3.0.3",
+]
+requires-python = "==3.12"
+authors = [
+  {name = "Cameron Lang", email = "cameronlang@wentworth.school.nz"},
+  {name = "Liam Haycock", email = "liamhaycock@wentworth.school.nz"},
+  {name = "Danny Haworth", email = "dannyhaworth@wentworth.school.nz"},
+  {name = "Ethan Shen", email = "ethanshen@wentworth.school.nz"},
+  {name = "Tommy (Yuxuan) Liang", email = "tommyliang@wentworth.school.nz"},
+  {name = "Cohen Thomas", email = "cohenthomas@wentworth.school.nz"},
+  {name = "David Russell (PM)", email = "drussell@wentworth.school.nz"},
+]
+maintainers = [
+  {name = "Cameron Lang", email = "cameronlang@wentworth.school.nz"}
+]
+description = "Sign in and sign out system for Wentworth Computer Science College"
+readme = "README.md"
+license = "CC0-1.0"
+license-files = ["LICEN[CS]E.*"]
+keywords = ["sign in", "sign out", "Wentworth",]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python"
+]
+
+[project.urls]
+Documentation = "https://github.com/Wentworth-CSC/SISO/wiki"
+Repository = "https://github.com/Wentworth-CSC/SISO"
+
+[tool.hatch.build.targets.wheel]
+include = ["**/*.py"]
