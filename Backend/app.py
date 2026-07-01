@@ -22,7 +22,7 @@ def student():
     name_last = "Doe"
     name_official = "Jane Doe"
     year = 11
-    photo = "<base64-or-url>"
+    photo = "https://derpicdn.net/img/2026/7/1/3846304/medium.jpg"
     currently_out = False
     checked_out_equipment = [
         {"equipment_id": 7, "name": "Canon Camera", "time_out": "2026-06-16"},
