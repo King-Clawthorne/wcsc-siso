@@ -62,6 +62,24 @@ def student_leave():
     })
 
 
+# Sign equipment out / in. The frontend POSTs the student barcode plus the
+# scanned equipment barcode; the backend toggles the equipment's state. Stub
+# implementation until the database is wired up.
+@app.route("/api/equipment/signout", methods=['POST'])
+def equipment_signout():
+    payload = request.get_json(silent=True) or {}
+    student_barcode = payload.get("student_barcode")
+    equipment_barcode = payload.get("equipment_barcode")
+    now = datetime.now(timezone.utc).isoformat()
+
+    return jsonify({
+        "student_barcode": student_barcode,
+        "equipment_barcode": equipment_barcode,
+        "time_out": now,
+        "time_in": now,
+    })
+
+
 # Serve the React single-page app. Any path that isn't an /api route falls
 # through to here: if a matching static file exists (JS/CSS/assets) it's
 # returned, otherwise index.html is served so client-side routing works on
