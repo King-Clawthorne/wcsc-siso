@@ -66,8 +66,8 @@ function HomePage() {
           </div>
 
           <div className="button-group">
-            <button className="action-btn" onClick={() => navigate('/sign-in-equipment')}>Sign in a sport equipment</button>
-            <button className="action-btn" onClick={() => navigate('/sign-out-equipment')}>Sign out a sport equipment</button>
+            <button className="action-btn" onClick={() => navigate('/sign-in-equipment')}>Sign in sport equipment</button>
+            <button className="action-btn" onClick={() => navigate('/sign-out-equipment')}>Sign out sport equipment</button>
           </div>
         </div>
       </div>
