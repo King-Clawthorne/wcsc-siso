@@ -10,7 +10,7 @@ const API_KEY = import.meta.env.VITE_API_KEY ?? '';
 
 function authHeaders(extra = {}) {
   return {
-    Authorization: API_KEY,
+    ...(API_KEY ? { Authorization: API_KEY } : {}),
     ...extra,
   };
 }

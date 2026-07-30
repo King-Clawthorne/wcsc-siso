@@ -31,7 +31,7 @@ export default function BarcodeScanner({ onScan, resetKey = 0 }) {
         // lens rather than the ultra-wide framing.
         const constraints = {
           video: {
-            facingMode: { exact: 'environment' },
+            facingMode: { ideal: 'environment' },
             width: { ideal: 1920 },
             height: { ideal: 1080 },
           },

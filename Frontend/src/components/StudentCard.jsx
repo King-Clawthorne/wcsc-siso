@@ -1,3 +1,11 @@
+// The backend sends the photo as a raw base64 string (see API_Requests.md);
+// an <img> needs a data: URL, so prefix it unless it's already a URL.
+function toPhotoSrc(photo) {
+  if (!photo) return null;
+  if (photo.startsWith('data:') || photo.startsWith('http')) return photo;
+  return `data:image/jpeg;base64,${photo}`;
+}
+
 // Presentational card for the student returned by GET /api/student.
 export default function StudentCard({ student }) {
   if (!student) return null;
@@ -16,7 +24,7 @@ export default function StudentCard({ student }) {
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
         {photo && (
           <img
-            src={photo}
+            src={toPhotoSrc(photo)}
             alt={`${name_first} ${name_last}`}
             style={{
               width: 72,

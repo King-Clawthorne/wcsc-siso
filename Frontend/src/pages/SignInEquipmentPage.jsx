@@ -59,7 +59,7 @@ export default function SignInEquipmentPage() {
     setEquipmentScanKey((k) => k + 1);
   }
 
-  function scanAnotherItem() {
+  function resetEquipmentScan() {
     setEquipmentBarcode(null);
     setResult(null);
     setError(null);

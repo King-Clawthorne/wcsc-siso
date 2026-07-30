@@ -94,7 +94,4 @@ function HomePage() {
 }
 
 export default HomePage;
-//last edited ethan shen: 2024-06-12 12:31, edited the home page and css file.
-
-
-//1122334455
+// Last edited by Ethan Shen: 2024-06-12 12:31
