@@ -4,12 +4,13 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import database
 
-app = Flask(__name__)
-CORS(app)  # Enables frontend requests across different ports/domains
+# Tell Flask to serve static files from the Vite build directory ('dist')
+app = Flask(__name__, static_folder="../dist", static_url_path="")
+CORS(app)
 
 @app.route("/")
 def index():
-    return "Hello World"
+    return app.send_static_file("index.html")
 
 @app.route("/api/student", methods=['GET'])
 def student():
