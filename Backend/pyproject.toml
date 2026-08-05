@@ -7,9 +7,9 @@ name = "SISO"
 version = "0.0.1"
 dependencies = [
   "flask==3.0.3",
-  "gunicorn==23.0.0",
+  "pytest==9.0.0"
 ]
-requires-python = ">=3.11"
+requires-python = "==3.12"
 authors = [
   {name = "Cameron Lang", email = "cameronlang@wentworth.school.nz"},
   {name = "Liam Haycock", email = "liamhaycock@wentworth.school.nz"},
