@@ -9,6 +9,7 @@ dependencies = [
   "flask==3.0.3",
   "pytest==9.0.0",
   "gunicorn>=21.2.0",
+  "sqlalchemy>=2.0.0",
 ]
 requires-python = "==3.12"
 authors = [
