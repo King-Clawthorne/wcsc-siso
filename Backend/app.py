@@ -4,8 +4,9 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import database
 
-# Tell Flask to serve static files from the Vite build directory ('dist')
-app = Flask(__name__, static_folder="../dist", static_url_path="")
+# Resolve absolute path to the 'dist' directory outside the Backend folder
+DIST_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dist"))
+app = Flask(__name__, static_folder=DIST_FOLDER, static_url_path="")
 CORS(app)
 
 @app.route("/")
@@ -58,7 +59,21 @@ def sign_student_out():
 
 @app.route("/api/equipment/signout", methods=['POST'])
 def sign_equipment_out():
-    return jsonify({"status": "success"})
+    data = request.get_json() or {}
+    student_barcode = data.get('studentBarcode')
+    equipment_barcode = data.get('equipmentBarcode')
+
+    # TODO: Process equipment lookup/toggle in database using student_barcode and equipment_barcode
+
+    now = datetime.now().strftime("%I:%M %p")
+
+    # Returning both time_in and time_out guarantees both SignInEquipmentPage 
+    # and SignOutEquipmentPage receive the timestamp field they expect
+    return jsonify({
+        "status": "success",
+        "time_in": now,
+        "time_out": now
+    })
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")
