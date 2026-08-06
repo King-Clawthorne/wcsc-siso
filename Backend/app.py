@@ -1,79 +1,103 @@
 import os
-from datetime import datetime
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-import database
+from datetime import datetime, timezone
 
-# Resolve absolute path to the 'dist' directory outside the Backend folder
-DIST_FOLDER = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "dist"))
-app = Flask(__name__, static_folder=DIST_FOLDER, static_url_path="")
+from flask import Flask, jsonify, request, send_from_directory
+from flask_cors import CORS
+
+# Serve the built React app (Frontend/dist) as static files.
+FRONTEND_DIST = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+    "Frontend",
+    "dist",
+)
+
+app = Flask(__name__, static_folder=None)
 CORS(app)
 
-@app.route("/")
-def index():
-    return app.send_static_file("index.html")
 
 @app.route("/api/student", methods=['GET'])
 def student():
     student_barcode = request.args.get('barcode')
-    student_data = database.get_student(student_barcode)
-
+    
+    # Stub response matching expected frontend data types
     results = {
-        "id": student_data.id,
-        "name_first": student_data.name_first,
-        "name_last": student_data.name_last,
-        "name_official": student_data.name_official,
-        "year": student_data.year,
-        "photo": student_data.photo,
-        # Must be a boolean (True/False) so JS resolves truthiness correctly
-        "currently_out": getattr(student_data, 'currently_out', False),
-        # Must be a list/array so JS can execute .map()
-        "checked_out_equipment": getattr(student_data, 'checked_out_equipment', [])
+        "id": 42,
+        "name_first": "Jane",
+        "name_last": "Doe",
+        "name_official": "Jane Doe",
+        "year": 11,
+        "photo": "https://derpicdn.net/img/2026/7/1/3846304/medium.jpg",
+        "currently_out": False,
+        "checked_out_equipment": [
+            {"equipment_id": 7, "name": "Canon Camera", "time_out": "2026-06-16"},
+        ]
     }
     return jsonify(results)
 
+
+# Sign a student out / in.
 @app.route("/api/student/leave", methods=['POST'])
-def sign_student_out():
-    data = request.get_json() or {}
-    barcode = data.get('barcode')
-    destination_id = data.get('destinationId')
-    reason = data.get('reason')
+def student_leave():
+    payload = request.get_json(silent=True) or {}
+    barcode = payload.get("barcode")
+    
+    # Support both camelCase (from JS) and snake_case keys
+    destination_id = payload.get("destinationId") or payload.get("destination_id")
+    reason = payload.get("reason")
+    now = datetime.now(timezone.utc).strftime("%I:%M %p")
 
-    now = datetime.now().strftime("%I:%M %p")
-
-    # If destinationId or reason is passed, this is a SIGN-OUT action
-    if destination_id is not None or reason is not None:
-        # TODO: Update database status for student leaving
-        return jsonify({
-            "status": "success",
-            "destination": f"Destination #{destination_id}" if destination_id else "Other",
-            "time_out": now
-        })
-
-    # Otherwise, this is a SIGN-IN action
-    # TODO: Update database status for student returning
     return jsonify({
         "status": "success",
-        "time_in": now
-    })
-
-@app.route("/api/equipment/signout", methods=['POST'])
-def sign_equipment_out():
-    data = request.get_json() or {}
-    student_barcode = data.get('studentBarcode')
-    equipment_barcode = data.get('equipmentBarcode')
-
-    # TODO: Process equipment lookup/toggle in database using student_barcode and equipment_barcode
-
-    now = datetime.now().strftime("%I:%M %p")
-
-    # Returning both time_in and time_out guarantees both SignInEquipmentPage 
-    # and SignOutEquipmentPage receive the timestamp field they expect
-    return jsonify({
-        "status": "success",
+        "barcode": barcode,
+        "destination_id": destination_id,
+        "destination": f"Destination #{destination_id}" if destination_id else "School",
+        "reason": reason,
+        "time_out": now,
         "time_in": now,
-        "time_out": now
     })
+
+
+# Sign equipment out / in.
+@app.route("/api/equipment/signout", methods=['POST'])
+def equipment_signout():
+    payload = request.get_json(silent=True) or {}
+    
+    # React hook sends camelCase keys: studentBarcode & equipmentBarcode
+    student_barcode = payload.get("studentBarcode") or payload.get("student_barcode")
+    equipment_barcode = payload.get("equipmentBarcode") or payload.get("equipment_barcode")
+    now = datetime.now(timezone.utc).strftime("%I:%M %p")
+
+    return jsonify({
+        "status": "success",
+        "student_barcode": student_barcode,
+        "equipment_barcode": equipment_barcode,
+        "time_out": now,
+        "time_in": now,
+    })
+
+
+# Serve the React single-page app.
+@app.route("/", defaults={"path": ""})
+@app.route("/<path:path>")
+def serve_spa(path):
+    # Prevent missing /api/ requests from falling through to returning index.html
+    if path.startswith("api/"):
+        return jsonify({"error": f"API endpoint '/{path}' not found"}), 404
+
+    full_path = os.path.join(FRONTEND_DIST, path)
+    if path and os.path.isfile(full_path):
+        return send_from_directory(FRONTEND_DIST, path)
+
+    index_path = os.path.join(FRONTEND_DIST, "index.html")
+    if os.path.exists(index_path):
+        return send_from_directory(FRONTEND_DIST, "index.html")
+
+    return jsonify({
+        "error": "dist/index.html missing on server",
+        "looked_in": FRONTEND_DIST,
+        "tip": "Verify build command: cd Frontend && npm install && npm run build"
+    }), 404
+
 
 if __name__ == "__main__":
     app.run(debug=os.environ.get("FLASK_DEBUG", "false").lower() == "true")
