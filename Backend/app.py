@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 # Import database engine and ORM models
-from db import (
+from database import (
     Destination,
     Equipment,
     EquipmentSignInOut,
